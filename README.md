@@ -1,85 +1,48 @@
-# 中山網路書店
+# 1.建環境（conda / Python 3.10）
 
-[![GitHub release](https://img.shields.io/github/release/Text-Analytics-and-Retrieval/db_class2023)](https://github.com/Text-Analytics-and-Retrieval/db_class2023/releases/latest)
-[![GitHub license](https://img.shields.io/github/license/Text-Analytics-and-Retrieval/db_class2023)](https://github.com/Text-Analytics-and-Retrieval/db_class2023/main/LICENSE)
+把畫布裡的 environment.yml 存到專案資料夾的根目錄（例如 miniworld/）
+開啟終端機：
+conda --version
+conda env create -f environment.yml
+conda activate miniworld666
 
-一套使用Flask開發的網路書店系統，後端使用Postgres資料庫
 
-## 功能
+# 2.建專案結構與檔案
+在 VS Code 建一個空資料夾（例如 miniworld/），將畫布中每個「==== 文件：... ====" 區塊另存成對應檔案與路徑（含 routes/、templates/ 子資料夾）。把 .env.example 另存一份成 .env。
 
-- 提供CRUD範例，並搭配資料分析功能。
-- 以MVC架構開發。
-- 一般消費者可以瀏覽、搜尋、購買商品，並查看訂單狀態。
-- 後台管理者可以編輯商品，並檢視每筆訂單以及商品銷售圖表。
+# 3.設定資料庫連線（.env）
+.env 內容已放入你的連線（140.117.68.66 / project_4 / czb2g4）。確保伺服器端允許你的 IP 存取 5432。
+若你用 pgAdmin4 測過可連線，Flask 這邊就沒問題。
 
-## 介面範例
+# 4.啟動 Flask
+在 VS Code 右下角選擇 miniworld666 解譯器
 
-![image](https://user-images.githubusercontent.com/52253495/226426951-b1ef62d0-56ae-443f-9483-c06524b5fb12.png)
+終端機執行：
+set FLASK_APP=app.py   
+### Windows PowerShell 請改：$env:FLASK_APP=\"app.py\"
+flask run
 
-## 安裝
+A.正常模式:
+瀏覽器打開 http://127.0.0.1:5000/
+ ，應能看到儀表；上方導覽可進「客人 / 訂單 / 機器人 / 送餐紀錄」
+B. 網頁APP檢查模式（不連 DB）:
+在同一個 flask run 執行中，瀏覽 http://127.0.0.1:5000/healthz
+若看到 {"app":"ok"} 代表 Flask 跑得好，問題在 DB 連線。DB檢查模式(
+C. 網頁DB檢查模式:
+瀏覽 http://127.0.0.1:5000/dbz
+若是 {"db":"ok"}，表示 DB 可達；首頁應該會正常顯示統計。
+若是 {"db":"down"}，代表你的機器 目前到 140.117.68.66:5432 不可達 或帳密/DB 名不符。此時首頁會顯示警示訊息，而不會無限轉圈。
 
-### 0. 進入終端機
+# 5.快速驗收
+先到「客人」→ 新增一位客人
+到「訂單」→ 新增訂單（選剛剛那個客人，填 1~2 個品項，金額會自動加總）
+進入訂單明細 → 「切換狀態」看 TODO↔DONE 是否生效
+在明細底下「送餐」→ 選一個機器人（若沒有先到「機器人」新增），送出後到「送餐紀錄」看是否出現
 
-### 1. 取得原始碼
-
-```bash
-# 從 Github 拉取原始碼
-git clone https://github.com/Text-Analytics-and-Retrieval/DB_CLASS_2025.git
-cd DB_CLASS_2025/
-```
-
-### 2. 建立環境
-注意：請先安裝 [anaconda](https://www.anaconda.com/download) 再進行後續的步驟
-```bash!
-# 1. `db-2025` 可改為自訂的環境名稱
-# 2. 同學也可以自訂 `python=...` 的版本，但要注意3.11版會有版本衝突的問題，不建議使用
-conda create -n db-2025 python=3.10
-
-# 3. 啟動 conda 環境
-conda activate db-2025
-
-# 4. 這時候可以在終端機看到類似 
-# (db-2025) user@userMacBook-Pro directory %
-```
-
-### 3. 安裝環境
-
-##### 安裝python套件
-
-```bash
-# 1. 請確認已啟動 conda 環境
-# 2. 請確認 `requirements.txt` 檔案位於當前目錄
-pip install -r requirements.txt
-```
-
-##### 修改連線資訊
-
-```bash
-# 1. 找到 .env.example 檔案
-# 2. 注意：複製 .env.example 建立一個新的 .env 檔案
-# 3. 根據各組的連線資訊修改 .env 內容參數
-DB_USER=... 
-DB_PASSWORD=...
-DB_HOST=...
-DB_PORT=...
-DB_NAME=...
-```
-
-### 4. 匯入SQL
-參考資料: [Link](https://learningsky.io/use-postgresql-databases-with-the-pgadmin/)
-- 打開 ebook.sql
-- 將 SQL 檔裡面的程式碼 貼到 自己組別的資料庫內執行(在自己組別的資料庫點右鍵選Query Tool)並執行
-
-### 5. 啟動程式
-
-```bash
-python app.py
-倘若遇到 OSError: [Errno 98] Address already in use  像這樣的錯誤代表有重複執行的問題
-請輸入 lsof -i :5000 查看是哪個PID使用中，並再輸入kill -9 <該執行中的PID> 刪除
-```
-
-## 使用
-
-- 輸入點選running on後面的網址，進入首頁。![2024-10-12 13-30-04 的螢幕擷圖](https://github.com/user-attachments/assets/da1cb799-b40d-4604-8035-10294bf8867c)
-- 首次使用請點選註冊按鈕，並註冊帳號。
-- 註冊後，點選登入即可進入頁面。
+# 6.Git 初始化（可選）
+git init
+git add .
+git commit -m "init: flask miniworld (conda py310)"
+git branch -M main
+git remote add origin <你的 GitHub repo URL>
+git push -u origin main
